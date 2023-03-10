@@ -29,6 +29,40 @@ p {
 }
 .list__item {
   display: flex;
+  align-items: center;
   gap: 10px;
   margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.list__item:last-child {
+  margin-bottom: 0;
+}
+.country-list {
+  margin-left: 20px;
+  padding: 25px;
+}
+.info__item {
+  display: block;
+  height: 250px;
+  padding: 25px;
+  margin-left: 10px;
+  /* transition: 1s; */
+}
+
+.img_item {
+  width: 50px;
+  height: 50px;
+  display: block;
+  transition: 1s;
+}
+/* .img_item {
+  display: block;
+  transition: 1s;
+} */
+.img_item:hover {
+  transform: scale(1.2);
+}
+#search-box {
+  margin-left: 20px;
 }

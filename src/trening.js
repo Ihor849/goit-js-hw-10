@@ -1,74 +1,108 @@
-// import './css/styles.css';
-// import Notiflix from 'notiflix';
-// import debounce from 'lodash.debounce';
+import './css/styles.css';
+import Notiflix from 'notiflix';
+import debounce from 'lodash.debounce';
 
-// import { countryInputEl, countryList, countryInfo } from './js/refs';
-// import fetchCountries from './js/fetchCountries';
+import { countryInputEl, countryList, countryInfo } from './js/refs';
+import fetchCountries from './js/fetchCountries';
 
-// const DEBOUNCE_DELAY = 300;
+// import { countryList } from './templates/country-list';
 
-// const refs = {
-//   countryInputEl: document.querySelector('#search-box'),
-//   countryList: document.querySelector('.country-list'),
-//   countryInfo: document.querySelector('.country-info'),
-// };
+const DEBOUNCE_DELAY = 300;
 
-// // Слушатель на INPUT с debounce
-// refs.countryInputEl.addEventListener(
-//   'input',
-//   debounce(onCountrySearchInput, DEBOUNCE_DELAY)
-// );
+const refs = {
+  countryInputEl: document.querySelector('#search-box'),
+  countryList: document.querySelector('.country-list'),
+  countryInfo: document.querySelector('.country-info'),
+};
+refs.countryInputEl.setAttribute('placeholder', 'Enter country name');
+// Слушатель на INPUT с debounce
+refs.countryInputEl.addEventListener(
+  'input',
+  debounce(onCountrySearchInput, DEBOUNCE_DELAY)
+);
 
-// // / Очищает разметку HTML
-// // const clearMarkup = element => (element.innerHTML = '');
-// // const changeBorderColor = color => (refs.inputEl.style.backgroundColor = color);
+// получаем масив стран
+function onCountrySearchInput(evt) {
+  const inputText = evt.target.value;
+  const valueNormalized = inputText.trim().toLowerCase();
 
-// function onCountrySearchInput(e) {
-//   //   clearMarkup(refs.countryListEl);
-//   //   clearMarkup(refs.countryInfoEl);
-//   //   console.log(event.target.value);
+  console.log(valueNormalized);
+  if (valueNormalized === '') {
+    clearAll();
+    return;
+  } else {
+    fetchCountries(valueNormalized)
+      .then(countres => {
+        const findCountry = countres.filter(({ name }) =>
+          name.official.toLowerCase().includes(valueNormalized)
+        );
+        console.log(findCountry);
+        if (findCountry.length < 2) {
+          const markupCountryCard = createCountryInformation(findCountry[0]);
+          refs.countryInfo.innerHTML = markupCountryCard;
+          refs.countryList.style.backgroundColor = '#ffffff';
+          refs.countryInfo.style.backgroundColor = '#b2eeef';
+          refs.countryList.innerHTML = '';
+          Notiflix.Notify.success('Here your result');
+        } else if (findCountry.length > 1 && findCountry.length <= 10) {
+          const markupList = createCountriesList(findCountry);
+          refs.countryList.innerHTML = markupList;
+          refs.countryInfo.innerHTML = '';
 
-//   //   borderColor('white');
-//   const searchCountry = e.target.value.trim();
+          refs.countryList.style.backgroundColor = '#d4db8f';
+          Notiflix.Notify.success('Here your result');
+          return;
+        } else {
+          clearAll();
+          Notiflix.Notify.info(
+            'Too many matches found. Please enter a more specific name.'
+          );
+        }
+      })
+      .catch(() => {
+        clearAll();
+        Notiflix.Notify.failure('Oops, there is no country with that name.');
+      });
+  }
+}
+function createCountriesList(countries) {
+  return countries
+    .map(
+      ({ flags: { svg }, name: { official } }) => `
+       <li class="list__item">
+        <img class="img_item" src="${svg}" alt="${official}"/>
+        <h4>${official}</h4>
+        </li>
+    
+        `
+    )
+    .join('');
+}
 
-//   if (!e.target.value.trim()) {
-//     console.log('dfgegt');
-//     return;
-//   }
-
-//   fetchCountries(searchCountry)
-//     .then(countris => {
-//       console.log(countris);
-//       if (countris.length > 10) {
-//         Notiflix.Notify.info(
-//           'Too many matches found. Please enter a more specific name.'
-//         );
-//         return;
-//       }
-//       renderMarkup(countris);
-//     })
-//     .catch(() => {
-//       Notiflix.Notify.info('Oops, there is no country with that name');
-//     });
-
-//   function renderMarkup(countries) {
-//     //   changeBorderColor('khaki');
-//     console.log('GGGGG');
-//     let result = countries.findIndex(
-//       el => el.name.official.toUpperCase() === searchCountry.toUpperCase()
-//     );
-//     let markupCountryList = '';
-//     let markupCountryInfo = '';
-
-//     if (countries.length > 1 && countries.length <= 10 && result) {
-//       markupCountryInfo.innerHTML = '';
-//       markupCountryList.innerHTML = countries
-//         .map(
-//           e =>
-//             `<li><img src="${e.flags.svg}" alt="flag" width="20"> <span>${e.name.official}</span></li>`
-//         )
-//         .join('');
-//       return;
-//     }
-//   }
-// }
+function createCountryInformation({
+  flags: { svg },
+  name: { official },
+  capital,
+  population,
+  languages,
+}) {
+  const langs = Object.values(languages).join(', ');
+  return `
+  <div class="info__item">
+    <div class="block-img">
+      <img class="img_item" src="${svg}" alt="${official}"/>
+      <h2>${official}</h2>
+    </div>
+        <div class="info__block">
+            <p><b>Capital:</b> ${capital}</p>
+            <p><b>Population:</b> ${population}</p>
+            <p><b>Languages:</b> ${langs}</p>
+        </div>
+  </div>
+  `;
+}
+function clearAll() {
+  refs.countryList.innerHTML = '';
+  refs.countryInfo.innerHTML = '';
+}
+// 'Oops, Something went wrong'
