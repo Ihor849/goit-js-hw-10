@@ -17,6 +17,7 @@ body {
   padding: 8px;
   max-width: 320px;
   margin-bottom: 16px;
+  margin-left: 20px;
 }
 ul,
 li,
@@ -32,7 +33,7 @@ p {
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
-  cursor: pointer;
+  background-color: #d4db8f;
 }
 
 .list__item:last-child {
@@ -47,7 +48,7 @@ p {
   height: 250px;
   padding: 25px;
   margin-left: 10px;
-  /* transition: 1s; */
+  transition: 8s;
 }
 
 .img_item {
@@ -55,14 +56,12 @@ p {
   height: 50px;
   display: block;
   transition: 1s;
+  cursor: pointer;
 }
-/* .img_item {
-  display: block;
-  transition: 1s;
-} */
+
 .img_item:hover {
-  transform: scale(1.2);
+  transform: scale(1.4);
 }
-#search-box {
-  margin-left: 20px;
+.country-info {
+  background-color: #b2eeef;
 }
